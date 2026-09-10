@@ -59,24 +59,10 @@
       card.setAttribute("aria-label", "Train for " + cert.name);
 
       const levelClass = cert.level.toLowerCase();
-      const best = getBestScore(id);
-
-      const domainBarSpans = cert.domains
-        .map((d, i) => `<span style="width:${d.weight}%; background:${DOMAIN_COLORS[i % DOMAIN_COLORS.length]}"></span>`)
-        .join("");
 
       card.innerHTML = `
-        <div class="cert-card-top">
-          <span class="level-tag ${levelClass}">${cert.level}</span>
-          <span class="cert-meta">${cert.cost} · ${cert.time}</span>
-        </div>
+        <span class="level-tag ${levelClass}">${cert.level}</span>
         <h3 class="cert-name">${cert.name}</h3>
-        <p class="cert-blurb">${cert.blurb}</p>
-        <div class="domain-bar" aria-hidden="true">${domainBarSpans}</div>
-        <div class="cert-card-foot">
-          <span class="cert-cta">Start training</span>
-          <span>${best ? `<span class="best-score">best ${best.pct}%</span>` : `${cert.questions.length} practice Qs`}</span>
-        </div>
       `;
 
       card.addEventListener("click", () => startQuiz(id));
@@ -114,14 +100,19 @@
   const domainFlagName = document.getElementById("domain-flag-name");
   const questionText = document.getElementById("question-text");
   const optionsEl = document.getElementById("options");
+  const feedbackPanel = document.getElementById("feedback-panel");
   const btnPrev = document.getElementById("btn-prev");
   const btnNext = document.getElementById("btn-next");
   const btnExitQuiz = document.getElementById("btn-exit-quiz");
+
+  const LETTERS = ["A", "B", "C", "D", "E"];
 
   function renderQuestion() {
     const cert = CERTS[state.certId];
     const q = state.questions[state.index];
     const total = state.questions.length;
+    const answered = state.answers[state.index] !== null;
+    const selectedIndex = state.answers[state.index];
 
     quizCertName.textContent = cert.short;
     quizProgressLabel.textContent = "Q " + (state.index + 1) + " / " + total;
@@ -131,23 +122,49 @@
     domainFlagName.textContent = q.domain;
     questionText.textContent = q.q;
 
-    const letters = ["A", "B", "C", "D", "E"];
     optionsEl.innerHTML = "";
     q.options.forEach((opt, i) => {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "option" + (state.answers[state.index] === i ? " selected" : "");
-      btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
-      btn.addEventListener("click", () => selectOption(i));
+
+      let cls = "option";
+      if (answered) {
+        cls += " locked";
+        if (i === selectedIndex && i === q.correct) cls += " correct-pick";
+        else if (i === selectedIndex && i !== q.correct) cls += " wrong-pick";
+        else if (i === q.correct) cls += " reveal-correct";
+        else cls += " dim";
+      }
+      btn.className = cls;
+      btn.innerHTML = `<span class="option-letter">${LETTERS[i]}</span><span class="option-text">${opt}</span>`;
+
+      if (!answered) {
+        btn.addEventListener("click", () => selectOption(i));
+      } else {
+        btn.disabled = true;
+      }
       optionsEl.appendChild(btn);
     });
 
+    if (answered) {
+      const isCorrect = selectedIndex === q.correct;
+      feedbackPanel.style.display = "block";
+      feedbackPanel.className = "feedback-panel " + (isCorrect ? "is-correct" : "is-incorrect");
+      feedbackPanel.innerHTML = isCorrect
+        ? `<p class="feedback-status is-correct">Correct</p><p class="feedback-explain">${q.explain}</p>`
+        : `<p class="feedback-status is-incorrect">Not quite — the correct answer is ${LETTERS[q.correct]}</p><p class="feedback-explain"><strong>${q.options[q.correct]}.</strong> ${q.explain}</p>`;
+    } else {
+      feedbackPanel.style.display = "none";
+      feedbackPanel.innerHTML = "";
+    }
+
     btnPrev.disabled = state.index === 0;
     btnNext.textContent = state.index === total - 1 ? "See results" : "Next";
-    btnNext.disabled = state.answers[state.index] === null;
+    btnNext.disabled = !answered;
   }
 
   function selectOption(i) {
+    if (state.answers[state.index] !== null) return; // already locked in
     state.answers[state.index] = i;
     renderQuestion();
   }
@@ -183,7 +200,6 @@
   const resultsStatus = document.getElementById("results-status");
   const resultsVerdictText = document.getElementById("results-verdict-text");
   const domainBreakdown = document.getElementById("domain-breakdown");
-  const reviewList = document.getElementById("review-list");
   const btnRetry = document.getElementById("btn-retry");
   const btnBackToCerts = document.getElementById("btn-back-to-certs");
 
@@ -251,27 +267,6 @@
         </div>
       `;
       domainBreakdown.appendChild(row);
-    });
-
-    // Review list
-    reviewList.innerHTML = "";
-    const letters = ["A", "B", "C", "D", "E"];
-    state.questions.forEach((q, i) => {
-      const userAnswer = state.answers[i];
-      const isCorrect = userAnswer === q.correct;
-      const item = document.createElement("div");
-      item.className = "review-item";
-      item.innerHTML = `
-        <div class="review-item-head">
-          <span class="review-mark ${isCorrect ? "correct" : "incorrect"}">${isCorrect ? "✓ correct" : "✗ missed"}</span>
-        </div>
-        <p class="review-q">${q.q}</p>
-        <div class="review-domain">${q.code} ${q.domain}</div>
-        <div class="review-answer">Your answer: <strong>${userAnswer !== null ? letters[userAnswer] + " — " + q.options[userAnswer] : "skipped"}</strong></div>
-        ${!isCorrect ? `<div class="review-answer">Correct answer: <strong>${letters[q.correct]} — ${q.options[q.correct]}</strong></div>` : ""}
-        <div class="review-explain">${q.explain}</div>
-      `;
-      reviewList.appendChild(item);
     });
   }
 
