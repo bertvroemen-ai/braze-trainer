@@ -3,8 +3,6 @@
 (function () {
   "use strict";
 
-  const DOMAIN_COLORS = ["#e8a23d", "#45d6b4", "#e8695a", "#7aa2e8", "#c88ce8", "#e8d23d"];
-
   const screens = {
     landing: document.getElementById("screen-landing"),
     quiz: document.getElementById("screen-quiz"),
@@ -54,11 +52,10 @@
     CERT_ORDER.forEach((id) => {
       const cert = CERTS[id];
       const card = document.createElement("button");
-      card.className = "cert-card";
+      const levelClass = cert.level.toLowerCase();
+      card.className = "cert-card " + levelClass;
       card.setAttribute("type", "button");
       card.setAttribute("aria-label", "Train for " + cert.name);
-
-      const levelClass = cert.level.toLowerCase();
 
       card.innerHTML = `
         <span class="level-tag ${levelClass}">${cert.level}</span>
@@ -151,8 +148,8 @@
       feedbackPanel.style.display = "block";
       feedbackPanel.className = "feedback-panel " + (isCorrect ? "is-correct" : "is-incorrect");
       feedbackPanel.innerHTML = isCorrect
-        ? `<p class="feedback-status is-correct">Correct</p><p class="feedback-explain">${q.explain}</p>`
-        : `<p class="feedback-status is-incorrect">Not quite — the correct answer is ${LETTERS[q.correct]}</p><p class="feedback-explain"><strong>${q.options[q.correct]}.</strong> ${q.explain}</p>`;
+        ? `<p class="feedback-status is-correct">✓ Correct</p><p class="feedback-explain">${q.explain}</p>`
+        : `<p class="feedback-status is-incorrect">✗ Not quite — the correct answer is ${LETTERS[q.correct]}</p><p class="feedback-explain"><strong>${q.options[q.correct]}.</strong> ${q.explain}</p>`;
     } else {
       feedbackPanel.style.display = "none";
       feedbackPanel.innerHTML = "";
@@ -257,11 +254,15 @@
       const row = document.createElement("div");
       row.className = "domain-row";
       row.innerHTML = `
-        <div class="domain-row-name">${d.code} ${d.name}</div>
-        <div class="domain-row-stat">${stat.correct}/${stat.total} correct</div>
-        <div class="domain-row-bars">
+        <div class="domain-row-top">
+          <span class="domain-row-name">${d.code} ${d.name}</span>
+          <span class="domain-row-stat">${stat.correct}/${stat.total} correct</span>
+        </div>
+        <div class="bar-pair">
           <div class="bar-track"><div class="bar-fill weight" style="width:${d.weight}%"></div></div>
           <span class="bar-mini-label">${d.weight}% of real exam</span>
+        </div>
+        <div class="bar-pair">
           <div class="bar-track"><div class="bar-fill score ${isWeak ? "weak" : "good"}" style="width:${yourPct}%"></div></div>
           <span class="bar-mini-label">${yourPct}% your accuracy</span>
         </div>
