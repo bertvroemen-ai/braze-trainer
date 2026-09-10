@@ -8,7 +8,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/styles.css" />
 </head>
@@ -16,73 +16,80 @@
 
 <header class="topbar">
   <div class="topbar-inner">
-    <button class="wordmark" id="wordmark-home" type="button">braze<span>trainer</span></button>
+    <button class="wordmark" id="wordmark-home" type="button">brazetrainer</button>
     <p class="topbar-note">Unofficial, fan-made study tool. Not affiliated with or endorsed by Braze, Inc.</p>
   </div>
 </header>
 
-<main class="wrap">
+<main>
 
   <!-- ============ LANDING ============ -->
   <section class="screen active" id="screen-landing">
     <div class="hero">
-      <span class="hero-tag">8 certification paths</span>
-      <h1>Pick the certification you're training for.</h1>
-      <p>Original practice questions mapped to each exam's real domain weightings, built from Braze's published study guides. No account, no tracking beyond your own browser.</p>
+      <div class="wrap hero-inner">
+        <span class="hero-tag">8 certification paths</span>
+        <h1>Pick the certification you're training for.</h1>
+        <p>Original practice questions mapped to each exam's real domain weightings, built from Braze's published study guides. No account, no tracking beyond your own browser.</p>
+      </div>
     </div>
 
-    <div class="cert-grid" id="cert-grid" role="list"></div>
+    <div class="wrap">
+      <div class="cert-grid" id="cert-grid" role="list"></div>
 
-    <div class="disclaimer">
-      This is an independent, community-built study tool. Question content, exam names, domain weightings, and level badges are referenced from Braze's publicly published certification study guides for educational purposes, but all questions here are original and not affiliated with, endorsed by, or reviewed by Braze, Inc. Exam pricing, timing, format, and passing scores shown reflect those study guides at time of writing and may have changed — always confirm current details at <a href="https://www.braze.com/certification" target="_blank" rel="noopener">braze.com/certification</a> before registering for an official exam.
+      <div class="disclaimer">
+        This is an independent, community-built study tool. Question content, exam names, domain weightings, and level badges are referenced from Braze's publicly published certification study guides for educational purposes, but all questions here are original and not affiliated with, endorsed by, or reviewed by Braze, Inc. Exam pricing, timing, format, and passing scores shown reflect those study guides at time of writing and may have changed — always confirm current details at <a href="https://www.braze.com/certification" target="_blank" rel="noopener">braze.com/certification</a> before registering for an official exam.
+      </div>
     </div>
   </section>
 
   <!-- ============ QUIZ ============ -->
   <section class="screen" id="screen-quiz">
-    <div class="quiz-header">
-      <h2 id="quiz-cert-name"></h2>
-      <span class="quiz-progress-label" id="quiz-progress-label"></span>
-    </div>
-    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="wrap quiz-wrap">
+      <div class="quiz-header">
+        <h2 id="quiz-cert-name"></h2>
+        <span class="quiz-progress-label" id="quiz-progress-label"></span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
 
-    <div class="domain-flag">
-      <span class="code" id="domain-flag-code"></span>
-      <span id="domain-flag-name"></span>
-    </div>
+      <div class="domain-flag">
+        <span class="code" id="domain-flag-code"></span>
+        <span id="domain-flag-name"></span>
+      </div>
 
-    <p class="question-text" id="question-text"></p>
+      <p class="question-text" id="question-text"></p>
 
-    <div class="options" id="options"></div>
+      <div class="options" id="options"></div>
 
-    <div class="quiz-footer">
-      <button class="btn ghost" id="btn-exit-quiz" type="button">Exit to certifications</button>
-      <div style="display:flex; gap:10px;">
-        <button class="btn secondary" id="btn-prev" type="button">Back</button>
-        <button class="btn" id="btn-next" type="button" disabled>Next</button>
+      <div class="feedback-panel" id="feedback-panel" style="display:none"></div>
+
+      <div class="quiz-footer">
+        <button class="btn ghost" id="btn-exit-quiz" type="button">Exit to certifications</button>
+        <div>
+          <button class="btn secondary" id="btn-prev" type="button">Back</button>
+          <button class="btn" id="btn-next" type="button" disabled>Next</button>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ============ RESULTS ============ -->
   <section class="screen" id="screen-results">
-    <div class="results-top">
-      <div class="score-big" id="score-big">0<small>/0</small></div>
-      <div class="results-verdict">
-        <span class="status" id="results-status"></span>
-        <p id="results-verdict-text"></p>
+    <div class="wrap results-wrap">
+      <div class="results-top">
+        <div class="score-big" id="score-big">0<small>/0</small></div>
+        <div class="results-verdict">
+          <span class="status" id="results-status"></span>
+          <p id="results-verdict-text"></p>
+        </div>
       </div>
-    </div>
 
-    <p class="section-label">Accuracy by exam domain — weight bar shows real exam share, second bar shows your accuracy</p>
-    <div class="domain-breakdown" id="domain-breakdown"></div>
+      <p class="section-label">Accuracy by exam domain — muted bar shows real exam share, coloured bar shows your accuracy</p>
+      <div class="domain-breakdown" id="domain-breakdown"></div>
 
-    <p class="section-label">Question review</p>
-    <div class="review-list" id="review-list"></div>
-
-    <div class="results-actions">
-      <button class="btn" id="btn-retry" type="button">Try again</button>
-      <button class="btn secondary" id="btn-back-to-certs" type="button">Back to certifications</button>
+      <div class="results-actions">
+        <button class="btn" id="btn-retry" type="button">Try again</button>
+        <button class="btn secondary" id="btn-back-to-certs" type="button">Back to certifications</button>
+      </div>
     </div>
   </section>
 
